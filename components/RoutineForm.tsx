@@ -5,6 +5,8 @@ import { useRoutineForm } from "@/hooks/useRoutineForm";
 import { Routes } from "@/lib/routes";
 import DayCard from "./routine-form/DayCard";
 
+const DAY_COUNT_OPTIONS = [3, 4, 5, 6];
+
 export default function RoutineForm() {
   const router = useRouter();
   const {
@@ -48,7 +50,7 @@ export default function RoutineForm() {
           Cantidad de días
         </label>
         <div className="flex gap-2">
-          {[3, 4, 5, 6].map((count) => (
+          {DAY_COUNT_OPTIONS.map((count) => (
             <button
               key={count}
               type="button"
