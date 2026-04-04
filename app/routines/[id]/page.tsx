@@ -54,7 +54,13 @@ export default async function RoutinePage({
                 <span className="w-7 h-7 rounded-full bg-indigo-600 flex items-center justify-center text-xs font-bold text-white flex-shrink-0">
                   {day.dayNumber}
                 </span>
-                <h2 className="font-semibold text-white">{day.label}</h2>
+                <h2 className="font-semibold text-white flex-1">{day.label}</h2>
+                <Link
+                  href={Routes.routines.dayMetrics(routine.id, day.id)}
+                  className="text-xs text-indigo-400 hover:text-indigo-300 transition-colors"
+                >
+                  Ver métricas →
+                </Link>
               </div>
 
               {/* Exercise types */}
@@ -65,11 +71,13 @@ export default async function RoutinePage({
                   day.exerciseTypes.map((et) => (
                     <div key={et.id} className="space-y-3">
                       {/* Type badge */}
-                      <div className="flex items-center gap-2">
-                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-indigo-900/50 text-indigo-300 border border-indigo-800">
-                          {et.name}
-                        </span>
-                      </div>
+                      {et.name.trim() && (
+                        <div className="flex items-center gap-2">
+                          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-indigo-900/50 text-indigo-300 border border-indigo-800">
+                            {et.name}
+                          </span>
+                        </div>
+                      )}
 
                       {/* Exercises */}
                       <div className="space-y-3 pl-2">
@@ -80,6 +88,10 @@ export default async function RoutinePage({
                           >
                             {/* Exercise name */}
                             <div className="flex items-center gap-2 px-4 py-2.5 border-b border-zinc-700">
+                              {ex.image && (
+                                // eslint-disable-next-line @next/next/no-img-element
+                                <img src={ex.image} alt="" className="w-8 h-8 rounded object-cover flex-shrink-0" />
+                              )}
                               <span className="text-xs text-zinc-500 font-medium">
                                 {idx + 1}.
                               </span>

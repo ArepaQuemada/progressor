@@ -18,10 +18,10 @@ export default function RoutineForm() {
     updateDayLabel,
     addExerciseType,
     removeExerciseType,
-    updateExerciseTypeName,
     addExercise,
     removeExercise,
     updateExerciseName,
+    updateExerciseImage,
     addSet,
     removeSet,
     updateSet,
@@ -74,10 +74,10 @@ export default function RoutineForm() {
             onLabelChange={(value) => updateDayLabel(dayIndex, value)}
             onAddExerciseType={() => addExerciseType(dayIndex)}
             onRemoveExerciseType={(exerciseTypeIndex) => removeExerciseType(dayIndex, exerciseTypeIndex)}
-            onExerciseTypeNameChange={(exerciseTypeIndex, value) => updateExerciseTypeName(dayIndex, exerciseTypeIndex, value)}
             onAddExercise={(exerciseTypeIndex) => addExercise(dayIndex, exerciseTypeIndex)}
             onRemoveExercise={(exerciseTypeIndex, exerciseIndex) => removeExercise(dayIndex, exerciseTypeIndex, exerciseIndex)}
             onExerciseNameChange={(exerciseTypeIndex, exerciseIndex, value) => updateExerciseName(dayIndex, exerciseTypeIndex, exerciseIndex, value)}
+            onExerciseImageChange={(exerciseTypeIndex, exerciseIndex, image) => updateExerciseImage(dayIndex, exerciseTypeIndex, exerciseIndex, image)}
             onAddSet={(exerciseTypeIndex, exerciseIndex) => addSet(dayIndex, exerciseTypeIndex, exerciseIndex)}
             onRemoveSet={(exerciseTypeIndex, exerciseIndex, setIndex) => removeSet(dayIndex, exerciseTypeIndex, exerciseIndex, setIndex)}
             onUpdateSet={(exerciseTypeIndex, exerciseIndex, setIndex, field, value) => updateSet(dayIndex, exerciseTypeIndex, exerciseIndex, setIndex, field, value)}
