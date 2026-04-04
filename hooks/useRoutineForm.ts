@@ -100,7 +100,7 @@ export function useRoutineForm() {
     setDayDrafts((prev) =>
       updateAt(prev, dayIndex, (day) => ({
         ...day,
-        exerciseTypes: [...day.exerciseTypes, { name: "", exercises: [] as ExerciseDraft[] }],
+        exerciseTypes: [...day.exerciseTypes, { id: crypto.randomUUID(), name: "", exercises: [] }],
       }))
     );
   }
@@ -132,7 +132,7 @@ export function useRoutineForm() {
         ...day,
         exerciseTypes: updateAt(day.exerciseTypes, exerciseTypeIndex, (exerciseType) => ({
           ...exerciseType,
-          exercises: [...exerciseType.exercises, { name: "", image: null, sets: [{ ...DEFAULT_SET }] }],
+          exercises: [...exerciseType.exercises, { id: crypto.randomUUID(), name: "", image: null, sets: [{ ...DEFAULT_SET }] }],
         })),
       }))
     );
