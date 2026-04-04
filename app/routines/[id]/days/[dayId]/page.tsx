@@ -40,6 +40,10 @@ type WeekStats = {
   firstSetWeight: number;
   firstSetWeightUnit: "kg" | "lbs";
   firstSetReps: number;
+  currentWeight: number;
+  currentWeightUnit: "kg" | "lbs";
+  minReps: number;
+  maxReps: number;
 };
 
 type ExerciseProgress = {
@@ -57,6 +61,7 @@ function buildWeeklyProgress(
     type Accumulator = WeekStats & { earliestLogDate: string };
     const weekMap = new Map<string, Accumulator>();
 
+    // logs arrive in DESC order (most recent first)
     for (const log of logs) {
       const weekStart = getWeekStart(log.loggedAt);
       const exSets = log.sets.filter((s) => s.exerciseId === exerciseId);
@@ -65,7 +70,10 @@ function buildWeeklyProgress(
       const firstSet = exSets.find((s) => s.setNumber === 1) ?? exSets[0];
       const existing = weekMap.get(weekStart);
 
+      const reps = exSets.map((s) => s.reps);
+
       if (!existing) {
+        // First encounter for this week = most recent log → use as currentWeight
         weekMap.set(weekStart, {
           weekStart,
           maxWeight: Math.max(...exSets.map((s) => s.weight)),
@@ -73,6 +81,10 @@ function buildWeeklyProgress(
           firstSetWeight: firstSet.weight,
           firstSetWeightUnit: firstSet.weightUnit,
           firstSetReps: firstSet.reps,
+          currentWeight: firstSet.weight,
+          currentWeightUnit: firstSet.weightUnit,
+          minReps: Math.min(...reps),
+          maxReps: Math.max(...reps),
           earliestLogDate: log.loggedAt,
         });
       } else {
@@ -82,6 +94,8 @@ function buildWeeklyProgress(
             existing.weightUnit = s.weightUnit;
           }
         }
+        existing.minReps = Math.min(existing.minReps, ...reps);
+        existing.maxReps = Math.max(existing.maxReps, ...reps);
         // logs are DESC, so a smaller date means an earlier (older) log
         if (log.loggedAt < existing.earliestLogDate) {
           existing.earliestLogDate = log.loggedAt;
@@ -224,13 +238,16 @@ export default async function DayMetricsPage({
                                       <tr className="text-xs text-zinc-500 uppercase">
                                         <th className="text-left pb-2 font-medium">Semana</th>
                                         <th className="text-right pb-2 font-medium">Peso inicial</th>
+                                        <th className="text-right pb-2 font-medium">Peso actual</th>
                                         <th className="text-right pb-2 font-medium">Mejor peso</th>
+                                        <th className="text-right pb-2 font-medium">Reps</th>
                                         <th className="text-right pb-2 font-medium">% cambio</th>
                                       </tr>
                                     </thead>
                                     <tbody className="divide-y divide-zinc-700/50">
                                       {ep.weeks.map((week, i) => {
                                         const prev = ep.weeks[i - 1];
+
                                         let pctNode: React.ReactNode = (
                                           <span className="text-zinc-500">—</span>
                                         );
@@ -243,6 +260,23 @@ export default async function DayMetricsPage({
                                             </span>
                                           );
                                         }
+
+                                        const repRange = week.minReps === week.maxReps
+                                          ? `${week.minReps}`
+                                          : `${week.minReps}–${week.maxReps}`;
+
+                                        let repDeltaNode: React.ReactNode = null;
+                                        if (prev) {
+                                          const delta = week.maxReps - prev.maxReps;
+                                          if (delta !== 0) {
+                                            repDeltaNode = (
+                                              <span className={delta > 0 ? "text-emerald-400" : "text-red-400"}>
+                                                {" "}({delta > 0 ? "+" : ""}{delta})
+                                              </span>
+                                            );
+                                          }
+                                        }
+
                                         return (
                                           <tr key={week.weekStart}>
                                             <td className="py-2 text-zinc-400 text-xs">{formatWeekLabel(week.weekStart)}</td>
@@ -252,8 +286,16 @@ export default async function DayMetricsPage({
                                               <span className="text-zinc-500 text-xs"> ×{week.firstSetReps}</span>
                                             </td>
                                             <td className="py-2 text-right font-mono text-white">
+                                              {week.currentWeight}{" "}
+                                              <span className="text-zinc-400 text-xs">{week.currentWeightUnit}</span>
+                                            </td>
+                                            <td className="py-2 text-right font-mono text-white">
                                               {week.maxWeight}{" "}
                                               <span className="text-zinc-400 text-xs">{week.weightUnit}</span>
+                                            </td>
+                                            <td className="py-2 text-right font-mono text-sm text-white">
+                                              {repRange}
+                                              {repDeltaNode}
                                             </td>
                                             <td className="py-2 text-right text-xs font-mono">{pctNode}</td>
                                           </tr>
