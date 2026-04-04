@@ -6,8 +6,8 @@ import { createRoutine, type RoutineInput } from "@/lib/actions";
 import { Routes } from "@/lib/routes";
 
 export type SetDraft = { weight: string; weightUnit: "kg" | "lbs"; reps: string };
-export type ExerciseDraft = { name: string; sets: SetDraft[] };
-export type ExerciseTypeDraft = { name: string; exercises: ExerciseDraft[] };
+export type ExerciseDraft = { id: string; name: string; sets: SetDraft[] };
+export type ExerciseTypeDraft = { id: string; name: string; exercises: ExerciseDraft[] };
 export type DayDraft = { label: string; exerciseTypes: ExerciseTypeDraft[] };
 
 const DEFAULT_SET: SetDraft = { weight: "", weightUnit: "kg", reps: "" };
@@ -102,7 +102,7 @@ export function useRoutineForm() {
     setDayDrafts((prev) =>
       updateAt(prev, dayIndex, (day) => ({
         ...day,
-        exerciseTypes: [...day.exerciseTypes, { name: "", exercises: [] }],
+        exerciseTypes: [...day.exerciseTypes, { id: crypto.randomUUID(), name: "", exercises: [] }],
       }))
     );
   }
@@ -134,7 +134,7 @@ export function useRoutineForm() {
         ...day,
         exerciseTypes: updateAt(day.exerciseTypes, exerciseTypeIndex, (exerciseType) => ({
           ...exerciseType,
-          exercises: [...exerciseType.exercises, { name: "", sets: [{ ...DEFAULT_SET }] }],
+          exercises: [...exerciseType.exercises, { id: crypto.randomUUID(), name: "", sets: [{ ...DEFAULT_SET }] }],
         })),
       }))
     );

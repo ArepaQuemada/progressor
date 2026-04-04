@@ -8,14 +8,21 @@ import type { Routine } from "@/db/schema";
 export default function RoutineCard({ routine }: { routine: Routine }) {
   async function handleDelete() {
     if (!confirm(`¿Eliminar "${routine.name}"?`)) return;
-    await deleteRoutine(routine.id);
+    try {
+      await deleteRoutine(routine.id);
+    } catch {
+      alert("No se pudo eliminar la rutina. Intentá de nuevo.");
+    }
   }
 
-  const date = new Date(routine.createdAt).toLocaleDateString("es-AR", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  });
+  const rawDate = new Date(routine.createdAt);
+  const date = isNaN(rawDate.getTime())
+    ? "—"
+    : rawDate.toLocaleDateString("es-AR", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      });
 
   return (
     <div className="group rounded-xl border border-zinc-700 bg-zinc-900 p-5 hover:border-zinc-500 transition-colors">

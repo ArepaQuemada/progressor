@@ -46,7 +46,7 @@ export default function ExerciseTypeCard({
       <div className="space-y-3">
         {exerciseType.exercises.map((exercise, exerciseIndex) => (
           <ExerciseRow
-            key={exerciseIndex}
+            key={exercise.id}
             exercise={exercise}
             index={exerciseIndex}
             onNameChange={(value) => onExerciseNameChange(exerciseIndex, value)}

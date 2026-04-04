@@ -48,7 +48,7 @@ export default function DayCard({
       <div className="space-y-4 pl-4 border-l-2 border-zinc-700">
         {day.exerciseTypes.map((exerciseType, exerciseTypeIndex) => (
           <ExerciseTypeCard
-            key={exerciseTypeIndex}
+            key={exerciseType.id}
             exerciseType={exerciseType}
             onNameChange={(value) => onExerciseTypeNameChange(exerciseTypeIndex, value)}
             onRemove={() => onRemoveExerciseType(exerciseTypeIndex)}
