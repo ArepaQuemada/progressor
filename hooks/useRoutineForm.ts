@@ -6,8 +6,8 @@ import { createRoutine, type RoutineInput } from "@/lib/actions";
 import { Routes } from "@/lib/routes";
 
 export type SetDraft = { weight: string; weightUnit: "kg" | "lbs"; reps: string };
-export type ExerciseDraft = { name: string; image: string | null; sets: SetDraft[] };
-export type ExerciseTypeDraft = { name: string; exercises: ExerciseDraft[] };
+export type ExerciseDraft = { id: string; name: string; image: string | null; sets: SetDraft[] };
+export type ExerciseTypeDraft = { id: string; name: string; exercises: ExerciseDraft[] };
 export type DayDraft = { label: string; exerciseTypes: ExerciseTypeDraft[] };
 
 const DEFAULT_SET: SetDraft = { weight: "", weightUnit: "kg", reps: "" };
