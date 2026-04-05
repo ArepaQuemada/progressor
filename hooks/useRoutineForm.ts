@@ -6,7 +6,7 @@ import { createRoutine, type RoutineInput } from "@/lib/actions";
 import { Routes } from "@/lib/routes";
 
 export type SetDraft = { weight: string; weightUnit: "kg" | "lbs"; reps: string };
-export type ExerciseDraft = { id: string; name: string; sets: SetDraft[] };
+export type ExerciseDraft = { id: string; name: string; image: string | null; sets: SetDraft[] };
 export type ExerciseTypeDraft = { id: string; name: string; exercises: ExerciseDraft[] };
 export type DayDraft = { label: string; exerciseTypes: ExerciseTypeDraft[] };
 
@@ -26,19 +26,16 @@ function validateForm(name: string, days: DayDraft[]): string | null {
   for (const [dayIndex, day] of days.entries()) {
     if (!day.label.trim()) return `El día ${dayIndex + 1} necesita un nombre.`;
 
-    for (const [exerciseTypeIndex, exerciseType] of day.exerciseTypes.entries()) {
-      if (!exerciseType.name.trim())
-        return `Día ${dayIndex + 1}: el tipo de ejercicio #${exerciseTypeIndex + 1} necesita nombre.`;
-
+    for (const [, exerciseType] of day.exerciseTypes.entries()) {
       for (const [exerciseIndex, exercise] of exerciseType.exercises.entries()) {
         if (!exercise.name.trim())
-          return `Día ${dayIndex + 1} › ${exerciseType.name}: el ejercicio #${exerciseIndex + 1} necesita nombre.`;
+          return `Día ${dayIndex + 1}: el ejercicio #${exerciseIndex + 1} necesita nombre.`;
         if (exercise.sets.length === 0)
-          return `Día ${dayIndex + 1} › ${exerciseType.name} › ${exercise.name}: agregá al menos una serie.`;
+          return `Día ${dayIndex + 1} › ${exercise.name}: agregá al menos una serie.`;
 
         for (const [setIndex, set] of exercise.sets.entries()) {
           if (!set.weight || !set.reps)
-            return `Día ${dayIndex + 1} › ${exerciseType.name} › ${exercise.name}: serie ${setIndex + 1} incompleta.`;
+            return `Día ${dayIndex + 1} › ${exercise.name}: serie ${setIndex + 1} incompleta.`;
         }
       }
     }
@@ -58,6 +55,7 @@ function toRoutineInput(name: string, days: DayDraft[]): RoutineInput {
         exercises: exerciseType.exercises.map((exercise, exerciseIndex) => ({
           name: exercise.name.trim(),
           order: exerciseIndex,
+          image: exercise.image,
           sets: exercise.sets.map((set, setIndex) => ({
             setNumber: setIndex + 1,
             weight: parseFloat(set.weight),
@@ -134,7 +132,7 @@ export function useRoutineForm() {
         ...day,
         exerciseTypes: updateAt(day.exerciseTypes, exerciseTypeIndex, (exerciseType) => ({
           ...exerciseType,
-          exercises: [...exerciseType.exercises, { id: crypto.randomUUID(), name: "", sets: [{ ...DEFAULT_SET }] }],
+          exercises: [...exerciseType.exercises, { id: crypto.randomUUID(), name: "", image: null, sets: [{ ...DEFAULT_SET }] }],
         })),
       }))
     );
@@ -166,6 +164,26 @@ export function useRoutineForm() {
           exercises: updateAt(exerciseType.exercises, exerciseIndex, (exercise) => ({
             ...exercise,
             name: value,
+          })),
+        })),
+      }))
+    );
+  }
+
+  function updateExerciseImage(
+    dayIndex: number,
+    exerciseTypeIndex: number,
+    exerciseIndex: number,
+    image: string | null
+  ) {
+    setDayDrafts((prev) =>
+      updateAt(prev, dayIndex, (day) => ({
+        ...day,
+        exerciseTypes: updateAt(day.exerciseTypes, exerciseTypeIndex, (exerciseType) => ({
+          ...exerciseType,
+          exercises: updateAt(exerciseType.exercises, exerciseIndex, (exercise) => ({
+            ...exercise,
+            image,
           })),
         })),
       }))
@@ -263,6 +281,7 @@ export function useRoutineForm() {
     addExercise,
     removeExercise,
     updateExerciseName,
+    updateExerciseImage,
     addSet,
     removeSet,
     updateSet,

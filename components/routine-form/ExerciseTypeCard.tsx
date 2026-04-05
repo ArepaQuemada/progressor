@@ -1,13 +1,13 @@
-import type { ExerciseTypeDraft, SetDraft } from "@/hooks/useRoutineForm";
+import type { ExerciseDraft, SetDraft } from "@/hooks/useRoutineForm";
 import ExerciseRow from "./ExerciseRow";
 
 type Props = {
-  exerciseType: ExerciseTypeDraft;
-  onNameChange: (value: string) => void;
+  exerciseType: { exercises: ExerciseDraft[] };
   onRemove: () => void;
   onAddExercise: () => void;
   onRemoveExercise: (exerciseIndex: number) => void;
   onExerciseNameChange: (exerciseIndex: number, value: string) => void;
+  onExerciseImageChange: (exerciseIndex: number, image: string | null) => void;
   onAddSet: (exerciseIndex: number) => void;
   onRemoveSet: (exerciseIndex: number, setIndex: number) => void;
   onUpdateSet: (exerciseIndex: number, setIndex: number, field: keyof SetDraft, value: string) => void;
@@ -15,31 +15,24 @@ type Props = {
 
 export default function ExerciseTypeCard({
   exerciseType,
-  onNameChange,
   onRemove,
   onAddExercise,
   onRemoveExercise,
   onExerciseNameChange,
+  onExerciseImageChange,
   onAddSet,
   onRemoveSet,
   onUpdateSet,
 }: Props) {
   return (
     <div className="rounded-lg border border-zinc-700 bg-zinc-800 p-4 space-y-4">
-      <div className="flex items-center gap-2">
-        <input
-          type="text"
-          value={exerciseType.name}
-          onChange={(e) => onNameChange(e.target.value)}
-          placeholder="Tipo de ejercicio (Ej: Pull, Push, Pierna...)"
-          className="flex-1 rounded-lg bg-zinc-700 border border-zinc-600 px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-        />
+      <div className="flex justify-end">
         <button
           type="button"
           onClick={onRemove}
-          className="p-2 rounded-lg text-zinc-400 hover:text-red-400 hover:bg-zinc-700 transition-colors"
+          className="p-1.5 rounded text-zinc-500 hover:text-red-400 hover:bg-zinc-700 transition-colors text-xs"
         >
-          ✕
+          Eliminar grupo
         </button>
       </div>
 
@@ -50,6 +43,7 @@ export default function ExerciseTypeCard({
             exercise={exercise}
             index={exerciseIndex}
             onNameChange={(value) => onExerciseNameChange(exerciseIndex, value)}
+            onImageChange={(image) => onExerciseImageChange(exerciseIndex, image)}
             onRemove={() => onRemoveExercise(exerciseIndex)}
             onAddSet={() => onAddSet(exerciseIndex)}
             onRemoveSet={(setIndex) => onRemoveSet(exerciseIndex, setIndex)}

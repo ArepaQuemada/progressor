@@ -1,8 +1,8 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { days, exerciseTypes, exercises, routines, sets } from "@/db/schema";
-import { asc, eq } from "drizzle-orm";
+import { days, exerciseTypes, exercises, routines, sets, workoutLogs, workoutSets } from "@/db/schema";
+import { asc, desc, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
 export type SetInput = {
@@ -15,6 +15,7 @@ export type SetInput = {
 export type ExerciseInput = {
   name: string;
   order: number;
+  image?: string | null;
   sets: SetInput[];
 };
 
@@ -49,6 +50,7 @@ export type RoutineDetail = {
         id: number;
         name: string;
         order: number;
+        image: string | null;
         sets: {
           id: number;
           setNumber: number;
@@ -58,6 +60,30 @@ export type RoutineDetail = {
         }[];
       }[];
     }[];
+  }[];
+};
+
+export type WorkoutSetLogInput = {
+  exerciseId: number;
+  setNumber: number;
+  weight: number;
+  weightUnit: "kg" | "lbs";
+  reps: number;
+};
+
+export type WorkoutLogDetail = {
+  id: number;
+  dayId: number;
+  loggedAt: string;
+  sets: {
+    id: number;
+    logId: number;
+    exerciseId: number;
+    setNumber: number;
+    weight: number;
+    weightUnit: "kg" | "lbs";
+    reps: number;
+    exercise: { id: number; name: string };
   }[];
 };
 
@@ -90,6 +116,7 @@ export async function createRoutine(input: RoutineInput) {
             exerciseTypeId: etRow.id,
             name: ex.name,
             order: ex.order,
+            image: ex.image ?? null,
           })
           .returning();
 
@@ -146,4 +173,50 @@ export async function getRoutine(id: number): Promise<RoutineDetail | null> {
 export async function deleteRoutine(id: number) {
   await db.delete(routines).where(eq(routines.id, id));
   revalidatePath("/");
+}
+
+export async function createWorkoutLog(
+  routineId: number,
+  dayId: number,
+  loggedAt: string,
+  logSets: WorkoutSetLogInput[]
+) {
+  const [log] = await db
+    .insert(workoutLogs)
+    .values({ dayId, loggedAt })
+    .returning();
+
+  for (const s of logSets) {
+    await db.insert(workoutSets).values({
+      logId: log.id,
+      exerciseId: s.exerciseId,
+      setNumber: s.setNumber,
+      weight: s.weight,
+      weightUnit: s.weightUnit,
+      reps: s.reps,
+    });
+  }
+
+  revalidatePath(`/routines/${routineId}/days/${dayId}`);
+}
+
+export async function getWorkoutLogsForDay(dayId: number): Promise<WorkoutLogDetail[]> {
+  const logs = await db.query.workoutLogs.findMany({
+    where: eq(workoutLogs.dayId, dayId),
+    orderBy: desc(workoutLogs.loggedAt),
+    with: {
+      sets: {
+        orderBy: asc(workoutSets.setNumber),
+        with: {
+          exercise: true,
+        },
+      },
+    },
+  });
+  return logs as WorkoutLogDetail[];
+}
+
+export async function deleteWorkoutLog(routineId: number, dayId: number, logId: number) {
+  await db.delete(workoutLogs).where(eq(workoutLogs.id, logId));
+  revalidatePath(`/routines/${routineId}/days/${dayId}`);
 }

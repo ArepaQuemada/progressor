@@ -12,6 +12,12 @@ sqlite.pragma("foreign_keys = ON");
 
 export const db = drizzle(sqlite, { schema });
 
+try {
+  sqlite.exec(`ALTER TABLE exercises ADD COLUMN image TEXT`);
+} catch {
+  // column already exists
+}
+
 sqlite.exec(`
   CREATE TABLE IF NOT EXISTS routines (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -41,6 +47,22 @@ sqlite.exec(`
 
   CREATE TABLE IF NOT EXISTS sets (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
+    exercise_id INTEGER NOT NULL REFERENCES exercises(id) ON DELETE CASCADE,
+    set_number INTEGER NOT NULL,
+    weight REAL NOT NULL,
+    weight_unit TEXT NOT NULL DEFAULT 'kg',
+    reps INTEGER NOT NULL
+  );
+
+  CREATE TABLE IF NOT EXISTS workout_logs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    day_id INTEGER NOT NULL REFERENCES days(id) ON DELETE CASCADE,
+    logged_at TEXT NOT NULL
+  );
+
+  CREATE TABLE IF NOT EXISTS workout_sets (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    log_id INTEGER NOT NULL REFERENCES workout_logs(id) ON DELETE CASCADE,
     exercise_id INTEGER NOT NULL REFERENCES exercises(id) ON DELETE CASCADE,
     set_number INTEGER NOT NULL,
     weight REAL NOT NULL,
