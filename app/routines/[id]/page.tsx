@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getRoutine } from "@/lib/actions";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import DayExercisesSection from "@/components/DayExercisesSection";
 import { Routes } from "@/lib/routes";
 
 export default async function RoutinePage({
@@ -46,109 +47,30 @@ export default async function RoutinePage({
 
         {/* Days */}
         <ErrorBoundary>
-        <div className="space-y-6">
-          {routine.days.map((day) => (
-            <section key={day.id} className="rounded-xl border border-zinc-700 bg-zinc-900 overflow-hidden">
-              {/* Day header */}
-              <div className="flex items-center gap-3 px-5 py-4 border-b border-zinc-700 bg-zinc-800/50">
-                <span className="w-7 h-7 rounded-full bg-indigo-600 flex items-center justify-center text-xs font-bold text-white flex-shrink-0">
-                  {day.dayNumber}
-                </span>
-                <h2 className="font-semibold text-white flex-1">{day.label}</h2>
-                <Link
-                  href={Routes.routines.dayMetrics(routine.id, day.id)}
-                  className="text-xs text-indigo-400 hover:text-indigo-300 transition-colors"
-                >
-                  Ver métricas →
-                </Link>
-              </div>
+          <div className="space-y-6">
+            {routine.days.map((day) => (
+              <section key={day.id} className="rounded-xl border border-zinc-700 bg-zinc-900 overflow-hidden">
+                {/* Day header */}
+                <div className="flex items-center gap-3 px-5 py-4 border-b border-zinc-700 bg-zinc-800/50">
+                  <span className="w-7 h-7 rounded-full bg-indigo-600 flex items-center justify-center text-xs font-bold text-white flex-shrink-0">
+                    {day.dayNumber}
+                  </span>
+                  <h2 className="font-semibold text-white flex-1">{day.label}</h2>
+                  <Link
+                    href={Routes.routines.dayMetrics(routine.id, day.id)}
+                    className="text-xs text-indigo-400 hover:text-indigo-300 transition-colors"
+                  >
+                    Ver métricas →
+                  </Link>
+                </div>
 
-              {/* Exercise types */}
-              <div className="p-5 space-y-6">
-                {day.exerciseTypes.length === 0 ? (
-                  <p className="text-zinc-500 text-sm">Sin ejercicios cargados.</p>
-                ) : (
-                  day.exerciseTypes.map((et) => (
-                    <div key={et.id} className="space-y-3">
-                      {/* Type badge */}
-                      {et.name.trim() && (
-                        <div className="flex items-center gap-2">
-                          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-indigo-900/50 text-indigo-300 border border-indigo-800">
-                            {et.name}
-                          </span>
-                        </div>
-                      )}
-
-                      {/* Exercises */}
-                      <div className="space-y-3 pl-2">
-                        {et.exercises.map((ex, idx) => (
-                          <div
-                            key={ex.id}
-                            className="rounded-lg border border-zinc-700 bg-zinc-800 overflow-hidden"
-                          >
-                            {/* Exercise name */}
-                            <div className="flex items-center gap-2 px-4 py-2.5 border-b border-zinc-700">
-                              {ex.image && (
-                                // eslint-disable-next-line @next/next/no-img-element
-                                <img src={ex.image} alt="" className="w-8 h-8 rounded object-cover flex-shrink-0" />
-                              )}
-                              <span className="text-xs text-zinc-500 font-medium">
-                                {idx + 1}.
-                              </span>
-                              <span className="text-sm font-medium text-white">
-                                {ex.name}
-                              </span>
-                            </div>
-
-                            {/* Sets table */}
-                            <div className="px-4 py-3">
-                              <table className="w-full text-sm">
-                                <thead>
-                                  <tr className="text-xs text-zinc-500 uppercase">
-                                    <th className="text-left pb-2 font-medium w-12">
-                                      Serie
-                                    </th>
-                                    <th className="text-right pb-2 font-medium">
-                                      Peso
-                                    </th>
-                                    <th className="text-right pb-2 font-medium">
-                                      Reps
-                                    </th>
-                                  </tr>
-                                </thead>
-                                <tbody className="divide-y divide-zinc-700/50">
-                                  {ex.sets.map((s) => (
-                                    <tr key={s.id}>
-                                      <td className="py-2 text-zinc-400">
-                                        {s.setNumber}
-                                      </td>
-                                      <td className="py-2 text-right font-mono text-white">
-                                        {s.weight}{" "}
-                                        <span className="text-zinc-400 text-xs">
-                                          {s.weightUnit}
-                                        </span>
-                                      </td>
-                                      <td className="py-2 text-right font-mono text-white">
-                                        {s.reps}{" "}
-                                        <span className="text-zinc-400 text-xs">
-                                          reps
-                                        </span>
-                                      </td>
-                                    </tr>
-                                  ))}
-                                </tbody>
-                              </table>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-            </section>
-          ))}
-        </div>
+                {/* Exercise types */}
+                <div className="p-5">
+                  <DayExercisesSection exerciseTypes={day.exerciseTypes} />
+                </div>
+              </section>
+            ))}
+          </div>
         </ErrorBoundary>
       </div>
     </main>
