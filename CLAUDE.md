@@ -18,8 +18,10 @@ Aplicación web para cargar y visualizar rutinas de gimnasio. MVP con Next.js, S
 | Archivo | Rol |
 |---|---|
 | `db/schema.ts` | Definición de tablas (fuente de verdad del modelo) |
-| `lib/db.ts` | Conexión SQLite + creación de tablas al arranque |
+| `db/client.ts` | Conexión SQLite + creación de tablas al arranque |
 | `lib/actions.ts` | Toda la lógica de datos: Server Actions para crear, leer y eliminar |
+| `lib/routes.ts` | Constantes de navegación |
+| `lib/workout/weeklyProgress.ts` | Lógica de dominio: cálculo de progreso semanal |
 | `components/RoutineForm.tsx` | Formulario dinámico anidado (Client Component) |
 | `app/page.tsx` | Lista de rutinas |
 | `app/routines/new/page.tsx` | Crear rutina |
@@ -43,7 +45,7 @@ routines → days → exercise_types → exercises → sets
 - El resto son Server Components por defecto
 - No usar `useEffect` para fetching — usar Server Components y `async/await` directamente
 - Estilos solo con clases de Tailwind, sin CSS custom salvo `app/globals.css` — nunca usar el atributo `style` inline
-- El esquema de la base de datos se modifica en `db/schema.ts` y se refleja en `lib/db.ts` (DDL inline al arranque)
+- El esquema de la base de datos se modifica en `db/schema.ts` y se refleja en `db/client.ts` (DDL inline al arranque)
 
 ## Comandos
 

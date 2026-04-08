@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, afterAll, vi } from 'vitest'
 
 const testDb = vi.hoisted(() => ({ sqlite: null as any, db: null as any }))
 
-vi.mock('@/lib/db', async () => {
+vi.mock('@/db/client', async () => {
   const Database = (await import('better-sqlite3')).default
   const { drizzle } = await import('drizzle-orm/better-sqlite3')
   const schema = await import('@/db/schema')

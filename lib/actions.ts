@@ -1,6 +1,6 @@
 "use server";
 
-import { db } from "@/lib/db";
+import { db } from "@/db/client";
 import { days, exerciseTypes, exercises, routines, sets, workoutLogs, workoutSets } from "@/db/schema";
 import { asc, desc, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
