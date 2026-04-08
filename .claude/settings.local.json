@@ -3,7 +3,9 @@
     "allow": [
       "Bash(npx tsc:*)",
       "Bash(npm run:*)",
-      "Bash(echo \"EXIT: $?\")"
+      "Bash(echo \"EXIT: $?\")",
+      "Bash(cp \"D:/dev/progressor/lib/weeklyProgress.ts\" /tmp/weeklyProgress.ts)",
+      "Bash(cp \"D:/dev/progressor/lib/parseWorkoutXlsx.ts\" /tmp/parseWorkoutXlsx.ts)"
     ]
   }
 }
